@@ -47,7 +47,7 @@ class Numpy_array_manuplator:
             engine.say(f"The size of the array is: {npy_array.size}")
         return npy_array
 
-    def multply_two_arrays(self, array_1, array_2, spek_also=False):
+    def multply_two_arrays(self, array_1, array_2, speak_also=False):
         """
         The function will return the mutliplied product of two arrays
         args:
@@ -55,15 +55,18 @@ class Numpy_array_manuplator:
         """
         result = array_1 @ array_2
         print(f"Product of the function is: {result}")
+        return result
 
-        if spek_also == True:
+        if speak_also == True:
             engine.say(f"Product of the function is: {result}")
 
 
 if __name__ == "__main__":
     print("Hello I am Neelesh")
     Instance = Numpy_array_manuplator()
-    arr = np.linspace(1, 20, 13, endpoint=True)
+    arr = np.linspace(1, 20, 13, endpoint=True, dtype=np.int32)
     print(arr)
     print()
-    print(Instance.basic_info(arr, speak_also=True))
+    # print(Instance.basic_info(arr, speak_also=True))
+    arr2 = np.linspace(1, 20, 13, endpoint=True, dtype=np.int32)
+    print(Instance.multply_two_arrays(arr, arr2, speak_also=True))
