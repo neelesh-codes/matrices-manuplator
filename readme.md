@@ -1,3 +1,9 @@
+<style>
+    h1{
+        color: red;
+    }
+</style>
+
 <h1>Matrices manuplator</h1>
 
 <h2>Install: </h2>
