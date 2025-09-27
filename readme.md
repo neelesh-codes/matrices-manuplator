@@ -1,8 +1,5 @@
-<style>
-    h1{
-        color: red;
-    }
-</style>
+<h1 align="center">--Work in progress--</h1>
+<h2 align="center">Please come later!</h2>
 
 <h1>Matrices manuplator</h1>
 
@@ -25,3 +22,6 @@ git clone https://github.com/neelesh-codes/matrices-manuplator.git
 <li>Second way is to install the .zip file by clicking the code button on the above page.</li>
 
 </ul>
+
+<h2>Guide: </h2>
+

@@ -60,6 +60,63 @@ class Numpy_array_manuplator:
         if speak_also == True:
             engine.say(f"Product of the function is: {result}")
 
+    def add_two_arrays(self, array_1, array_2, speak_also=False):
+        """
+        The function takes two arrays: array1 and array2 and return the sum of both arrays.
+        args:
+            self: A default argument for the object.
+            array_1: The first array or path to that array
+            array_2: The second array or path to that array
+        """
+        result = np.add(array_1, array_2)
+        print(f"The sum is: {result}")
+        if speak_also == True:
+            engine.say(f"The result is {result}")
+
+    def subtract_two_arrays(self, array_1, array_2, speak_also=False):
+        """
+        The function takes two arrays: array1 and array2 and return the diffrence of both arrays.
+        args:
+            self: A default argument for the object.
+            array_1: The first array or path to that array
+            array_2: The second array or path to that array
+        """
+        result = array_1 - array_2
+        print(f"The diffrence is: {result}")
+        if speak_also == True:
+            engine.say(f"The result is {result}")
+
+    def devide_two_arrays(self, array_1, array_2, speak_also=False):
+        """
+        The function takes two arrays: array1 and array2 and return the quotient of both arrays.
+        args:
+            self: A default argument for the object.
+            array_1: The first array or path to that array
+            array_2: The second array or path to that array
+        """
+        result = array_1 / array_2
+        print(f"The quotient is: {result}")
+        if speak_also == True:
+            engine.say(f"The result is {result}")
+
+        return result
+
+    def transpose_the_array(self, array_to_transpose: np.array, speak_also: bool) -> np.array:
+        """
+        This function will take an array and return the transposing array of it i.e. it will make the rows columns and columns rows respectively.
+        args:
+            self: default argument for object
+            array_to_transpose: the array that will be transposed.
+            speak_also: for taking permission to use speakers.
+        """
+        arr = array_to_transpose
+        print(f"Array before transposing: {array_to_transpose}")
+        result = arr.T
+        print(f"after transposing: {result}")
+        if speak_also == True:
+            engine.say(f"array after transposing : {result}")
+        return result
+
 
 if __name__ == "__main__":
     print("Hello I am Neelesh")
