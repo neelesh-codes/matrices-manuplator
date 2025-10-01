@@ -1,11 +1,11 @@
-import util1.Numpy_array_manuplator as nam
+import util1
 import numpy as np
 import os
 import shutil
 import sys
 
 
-class NPY_file_changer(nam):
+class NPY_file_changer(util1.Numpy_array_manuplator):
     def __init__(self, take_args: int = 0):
         self.take_args = take_args
 
@@ -54,4 +54,12 @@ class NPY_file_changer(nam):
 
 
 if __name__ == "__main__":
-    pass
+    try:
+        instance = NPY_file_changer()
+    except Exception as e:
+        print(f"The error is {instance}")
+    else:
+        print("Passed successfuly.")
+    finally:
+        print('Exiting the programm!')
+    
