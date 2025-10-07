@@ -3,6 +3,11 @@ import numpy as np
 import os
 import shutil
 import sys
+import pyttsx3
+
+engine = pyttsx3.init('sapi5')
+voices = engine.getProperty('voices')
+engine.setProperty('voices', voices[0].id)
 
 
 class NPY_file_changer(util1.Numpy_array_manuplator):
@@ -31,7 +36,7 @@ class NPY_file_changer(util1.Numpy_array_manuplator):
         print(file)
         print("+--------------------+------------------+")
 
-    def basic_info_of_file(self, npy_file_path):
+    def basic_info_of_file(self, npy_file_path, speak_also: bool = False):
         """This function loads a file and show a basic information of it like minimumm value, maximumm value, data type , size, shape etc.
         args:
             self: default argument for object.
@@ -45,12 +50,27 @@ class NPY_file_changer(util1.Numpy_array_manuplator):
         print(npy_file)
 
         print("Here is the basics info: ")
-        print(f"Max va;lue {np.max(npy_file)} ")
+        print(f"Max value {np.max(npy_file)} ")
         print(f"Min Value: {np.min(npy_file)} ")
         print(f"Sum of all numbers of npy array {np.sum(npy_file)} ")
         print(f"The Data Type of the array: {npy_file.dtype} ")
         print(f"The shape of the array is: {npy_file.shape}")
         print(f"The size of the array is: {npy_file.size}")
+
+        if speak_also == True:
+            engine.say(f"Max value: {np.max(npy_file)}")
+            engine.runAndWait()
+            engine.say(f"Min value: {np.min(npy_file)}")
+            engine.runAndWait()
+            engine.say(
+                f"Sum of all the numbers of npy file: {np.sum(npy_file)}")
+            engine.runAndWait()
+            engine.say(f"The datatype of the array: {npy_file.dtype}")
+            engine.runAndWait()
+            engine.say(f"The shape of the array: {npy_file.shape}")
+            engine.runAndWait()
+            engine.say(f"The size of the array: {npy_file.size}")
+            engine.runAndWait()
 
     def move_to_npy(self, data: np.array, file_path: str):
         """This function converts a array or a goroup of arrays into a .npy file.
@@ -64,10 +84,13 @@ class NPY_file_changer(util1.Numpy_array_manuplator):
         file_data = np.load(file_path)
         print(file_data)
 
+
+
 if __name__ == "__main__":
     try:
         instance = NPY_file_changer()
-        instance.basic_info_of_file("E:\\Agents\\Python\\projects\\matrices manuplator\\x.npy")
+        instance.basic_info_of_file(
+            "E:\\Agents\\Python\\projects\\matrices manuplator\\x.npy")
     except Exception as e:
         print(f"The error is {instance}")
     else:

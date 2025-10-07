@@ -38,13 +38,19 @@ class Numpy_array_manuplator:
         if speak_also == True:
 
             engine.say(f"Max value: {np.max(npy_array)} ")
+            engine.runAndWait()
             engine.say(f"Min Value: {np.min(npy_array)} ")
+            engine.runAndWait()
             engine.say(f"Sum of all numbers of npy array {np.sum(npy_array)} ")
+            engine.runAndWait()
             engine.say(f"The Data Type of the array: {npy_array.dtype} ")
+            engine.runAndWait()
             engine.say(f"Work completed at {datetime.datetime.now()}")
             engine.runAndWait()
             engine.say(f"The shape of the array is: {npy_array.shape}")
+            engine.runAndWait()
             engine.say(f"The size of the array is: {npy_array.size}")
+            engine.runAndWait()
         return npy_array
 
     def multply_two_arrays(self, array_1, array_2, speak_also=False):
@@ -55,10 +61,11 @@ class Numpy_array_manuplator:
         """
         result = array_1 @ array_2
         print(f"Product of the function is: {result}")
-        return result
 
         if speak_also == True:
             engine.say(f"Product of the function is: {result}")
+            engine.runAndWait()
+        return result
 
     def add_two_arrays(self, array_1, array_2, speak_also=False):
         """
@@ -72,6 +79,8 @@ class Numpy_array_manuplator:
         print(f"The sum is: {result}")
         if speak_also == True:
             engine.say(f"The result is {result}")
+            engine.runAndWait()
+        return result
 
     def subtract_two_arrays(self, array_1, array_2, speak_also=False):
         """
@@ -85,6 +94,8 @@ class Numpy_array_manuplator:
         print(f"The diffrence is: {result}")
         if speak_also == True:
             engine.say(f"The result is {result}")
+            engine.runAndWait()
+        return result
 
     def devide_two_arrays(self, array_1, array_2, speak_also=False):
         """
@@ -98,6 +109,7 @@ class Numpy_array_manuplator:
         print(f"The quotient is: {result}")
         if speak_also == True:
             engine.say(f"The result is {result}")
+            engine.runAndWait()
 
         return result
 
@@ -115,6 +127,7 @@ class Numpy_array_manuplator:
         print(f"after transposing: {result}")
         if speak_also == True:
             engine.say(f"array after transposing : {result}")
+            engine.runAndWait()
         return result
 
 
@@ -127,3 +140,4 @@ if __name__ == "__main__":
     # print(Instance.basic_info(arr, speak_also=True))
     arr2 = np.linspace(1, 20, 13, endpoint=True, dtype=np.int32)
     print(Instance.multply_two_arrays(arr, arr2, speak_also=True))
+    Instance.basic_info(np.array([[1, 2, 3], [4, 5, 6]]), speak_also=True)
