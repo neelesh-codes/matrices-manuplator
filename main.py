@@ -1,498 +1,390 @@
-import tkinter as tk
-from tkinter import ttk, scrolledtext, filedialog, messagebox
+import customtkinter as ctk
+from tkinter import filedialog, messagebox
 import numpy as np
-from utils.util1 import Numpy_array_manipulator
+from utils.util1 import Numpy_array_manuplator
 from utils.util2 import NPY_file_changer
-import traceback
+import sys
+
+# Set appearance mode and color theme
+ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("blue")
 
 
-class MatricesManipulatorGUI:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Matrices Manipulator")
-        self.root.geometry("1000x700")
-        self.root.resizable(True, True)
+class MatricesManipulatorApp(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+
+        # Configure window
+        self.title("Matrices Manipulator")
+        self.geometry("900x700")
         
-        # Initialize manipulators
-        self.array_manipulator = Numpy_array_manipulator()
-        self.file_manipulator = NPY_file_changer()
+        # Initialize utility classes
+        self.array_manipulator = Numpy_array_manuplator()
+        self.file_changer = NPY_file_changer()
         
-        # Configure style
-        style = ttk.Style()
-        style.theme_use('clam')
+        # Store arrays for operations
+        self.array1 = None
+        self.array2 = None
+        self.current_file_path = None
         
-        # Create main container
-        main_container = ttk.Frame(root, padding="10")
-        main_container.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
-        
-        # Configure grid weights
-        root.columnconfigure(0, weight=1)
-        root.rowconfigure(0, weight=1)
-        main_container.columnconfigure(0, weight=1)
-        main_container.rowconfigure(1, weight=1)
-        
-        # Title
-        title_label = ttk.Label(main_container, text="Matrices Manipulator", 
-                                font=('Arial', 20, 'bold'))
-        title_label.grid(row=0, column=0, pady=10)
-        
-        # Create notebook for tabs
-        self.notebook = ttk.Notebook(main_container)
-        self.notebook.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
-        
-        # Create tabs
-        self.create_array_operations_tab()
-        self.create_file_operations_tab()
-        self.create_quick_create_tab()
-        
-        # Output area at bottom
-        output_frame = ttk.LabelFrame(main_container, text="Output", padding="5")
-        output_frame.grid(row=2, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=(10, 0))
-        main_container.rowconfigure(2, weight=1)
-        
-        self.output_text = scrolledtext.ScrolledText(output_frame, height=10, 
-                                                      wrap=tk.WORD, font=('Consolas', 9))
-        self.output_text.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
-        output_frame.columnconfigure(0, weight=1)
-        output_frame.rowconfigure(0, weight=1)
-        
-        # Clear output button
-        clear_btn = ttk.Button(output_frame, text="Clear Output", 
-                               command=self.clear_output)
-        clear_btn.grid(row=1, column=0, pady=(5, 0))
+        # Create UI
+        self.create_widgets()
     
-    def create_array_operations_tab(self):
-        """Create tab for array operations"""
-        tab = ttk.Frame(self.notebook, padding="10")
-        self.notebook.add(tab, text="Array Operations")
+    def create_widgets(self):
+        # Create tabview
+        self.tabview = ctk.CTkTabview(self, width=850, height=650)
+        self.tabview.pack(padx=20, pady=20, fill="both", expand=True)
         
-        # Input frames
-        input_frame = ttk.LabelFrame(tab, text="Input Arrays", padding="10")
-        input_frame.grid(row=0, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
+        # Add tabs
+        self.tabview.add("Array Operations")
+        self.tabview.add("File Operations")
+        self.tabview.add("Create Array")
         
-        # Array 1
-        ttk.Label(input_frame, text="Array 1:").grid(row=0, column=0, sticky=tk.W, pady=5)
-        self.array1_entry = ttk.Entry(input_frame, width=50)
-        self.array1_entry.grid(row=0, column=1, padx=5, pady=5)
-        self.array1_entry.insert(0, "[[1, 2, 3], [4, 5, 6]]")
-        
-        # Array 2
-        ttk.Label(input_frame, text="Array 2:").grid(row=1, column=0, sticky=tk.W, pady=5)
-        self.array2_entry = ttk.Entry(input_frame, width=50)
-        self.array2_entry.grid(row=1, column=1, padx=5, pady=5)
-        self.array2_entry.insert(0, "[[7, 8], [9, 10], [11, 12]]")
-        
-        # Operations frame
-        ops_frame = ttk.LabelFrame(tab, text="Operations", padding="10")
-        ops_frame.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=10)
-        
-        # Buttons for operations
-        btn_width = 15
-        
-        ttk.Button(ops_frame, text="Add Arrays", width=btn_width,
-                   command=lambda: self.perform_operation('add')).grid(row=0, column=0, padx=5, pady=5)
-        
-        ttk.Button(ops_frame, text="Subtract Arrays", width=btn_width,
-                   command=lambda: self.perform_operation('subtract')).grid(row=0, column=1, padx=5, pady=5)
-        
-        ttk.Button(ops_frame, text="Multiply Arrays", width=btn_width,
-                   command=lambda: self.perform_operation('multiply')).grid(row=0, column=2, padx=5, pady=5)
-        
-        ttk.Button(ops_frame, text="Divide Arrays", width=btn_width,
-                   command=lambda: self.perform_operation('divide')).grid(row=0, column=3, padx=5, pady=5)
-        
-        ttk.Button(ops_frame, text="Transpose Array 1", width=btn_width,
-                   command=lambda: self.perform_operation('transpose')).grid(row=1, column=0, padx=5, pady=5)
-        
-        ttk.Button(ops_frame, text="Array 1 Info", width=btn_width,
-                   command=lambda: self.perform_operation('info')).grid(row=1, column=1, padx=5, pady=5)
+        # Setup each tab
+        self.setup_array_operations_tab()
+        self.setup_file_operations_tab()
+        self.setup_create_array_tab()
     
-    def create_file_operations_tab(self):
-        """Create tab for file operations"""
-        tab = ttk.Frame(self.notebook, padding="10")
-        self.notebook.add(tab, text="File Operations")
+    def setup_array_operations_tab(self):
+        tab = self.tabview.tab("Array Operations")
         
-        # Load file section
-        load_frame = ttk.LabelFrame(tab, text="Load .npy File", padding="10")
-        load_frame.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=5)
+        # Array 1 Frame
+        array1_frame = ctk.CTkFrame(tab)
+        array1_frame.pack(padx=10, pady=10, fill="x")
         
-        self.file_path_var = tk.StringVar()
-        ttk.Entry(load_frame, textvariable=self.file_path_var, width=50).grid(row=0, column=0, padx=5)
-        ttk.Button(load_frame, text="Browse", command=self.browse_file).grid(row=0, column=1, padx=5)
-        ttk.Button(load_frame, text="Load & Display", command=self.load_npy_file).grid(row=0, column=2, padx=5)
-        ttk.Button(load_frame, text="Show Info", command=self.show_file_info).grid(row=0, column=3, padx=5)
+        ctk.CTkLabel(array1_frame, text="Array 1:", font=("Arial", 14, "bold")).pack(anchor="w", padx=10, pady=5)
+        self.array1_text = ctk.CTkTextbox(array1_frame, height=80)
+        self.array1_text.pack(padx=10, pady=5, fill="x")
         
-        # Save array to file section
-        save_frame = ttk.LabelFrame(tab, text="Save Array to .npy File", padding="10")
-        save_frame.grid(row=1, column=0, sticky=(tk.W, tk.E), pady=10)
+        btn_frame1 = ctk.CTkFrame(array1_frame)
+        btn_frame1.pack(padx=10, pady=5, fill="x")
+        ctk.CTkButton(btn_frame1, text="Load Array 1", command=self.load_array1).pack(side="left", padx=5)
+        ctk.CTkButton(btn_frame1, text="Info", command=self.show_array1_info).pack(side="left", padx=5)
         
-        ttk.Label(save_frame, text="Array Data:").grid(row=0, column=0, sticky=tk.W, pady=5)
-        self.save_array_entry = ttk.Entry(save_frame, width=50)
-        self.save_array_entry.grid(row=0, column=1, padx=5, pady=5)
-        self.save_array_entry.insert(0, "[[1, 2, 3], [4, 5, 6]]")
+        # Array 2 Frame
+        array2_frame = ctk.CTkFrame(tab)
+        array2_frame.pack(padx=10, pady=10, fill="x")
         
-        ttk.Label(save_frame, text="Save As:").grid(row=1, column=0, sticky=tk.W, pady=5)
-        self.save_path_var = tk.StringVar()
-        ttk.Entry(save_frame, textvariable=self.save_path_var, width=50).grid(row=1, column=1, padx=5, pady=5)
+        ctk.CTkLabel(array2_frame, text="Array 2:", font=("Arial", 14, "bold")).pack(anchor="w", padx=10, pady=5)
+        self.array2_text = ctk.CTkTextbox(array2_frame, height=80)
+        self.array2_text.pack(padx=10, pady=5, fill="x")
         
-        ttk.Button(save_frame, text="Browse Location", 
-                   command=self.browse_save_location).grid(row=1, column=2, padx=5)
-        ttk.Button(save_frame, text="Save", command=self.save_to_npy).grid(row=2, column=1, pady=10)
+        btn_frame2 = ctk.CTkFrame(array2_frame)
+        btn_frame2.pack(padx=10, pady=5, fill="x")
+        ctk.CTkButton(btn_frame2, text="Load Array 2", command=self.load_array2).pack(side="left", padx=5)
+        ctk.CTkButton(btn_frame2, text="Info", command=self.show_array2_info).pack(side="left", padx=5)
         
-        # Copy file section
-        copy_frame = ttk.LabelFrame(tab, text="Copy .npy File", padding="10")
-        copy_frame.grid(row=2, column=0, sticky=(tk.W, tk.E), pady=5)
+        # Operations Frame
+        ops_frame = ctk.CTkFrame(tab)
+        ops_frame.pack(padx=10, pady=10, fill="x")
         
-        ttk.Label(copy_frame, text="Source:").grid(row=0, column=0, sticky=tk.W, pady=5)
-        self.copy_src_var = tk.StringVar()
-        ttk.Entry(copy_frame, textvariable=self.copy_src_var, width=50).grid(row=0, column=1, padx=5, pady=5)
-        ttk.Button(copy_frame, text="Browse", 
-                   command=lambda: self.browse_file_for_copy('src')).grid(row=0, column=2, padx=5)
+        ctk.CTkLabel(ops_frame, text="Operations:", font=("Arial", 14, "bold")).pack(anchor="w", padx=10, pady=5)
         
-        ttk.Label(copy_frame, text="Destination:").grid(row=1, column=0, sticky=tk.W, pady=5)
-        self.copy_dest_var = tk.StringVar()
-        ttk.Entry(copy_frame, textvariable=self.copy_dest_var, width=50).grid(row=1, column=1, padx=5, pady=5)
-        ttk.Button(copy_frame, text="Browse", 
-                   command=lambda: self.browse_file_for_copy('dest')).grid(row=1, column=2, padx=5)
+        operations_btn_frame = ctk.CTkFrame(ops_frame)
+        operations_btn_frame.pack(padx=10, pady=5, fill="x")
         
-        ttk.Button(copy_frame, text="Copy File", command=self.copy_npy_file).grid(row=2, column=1, pady=10)
+        ctk.CTkButton(operations_btn_frame, text="Add", command=self.add_arrays).pack(side="left", padx=5, pady=5)
+        ctk.CTkButton(operations_btn_frame, text="Subtract", command=self.subtract_arrays).pack(side="left", padx=5, pady=5)
+        ctk.CTkButton(operations_btn_frame, text="Multiply", command=self.multiply_arrays).pack(side="left", padx=5, pady=5)
+        ctk.CTkButton(operations_btn_frame, text="Divide", command=self.divide_arrays).pack(side="left", padx=5, pady=5)
+        ctk.CTkButton(operations_btn_frame, text="Transpose Array 1", command=self.transpose_array1).pack(side="left", padx=5, pady=5)
+        
+        # Result Frame
+        result_frame = ctk.CTkFrame(tab)
+        result_frame.pack(padx=10, pady=10, fill="both", expand=True)
+        
+        ctk.CTkLabel(result_frame, text="Result:", font=("Arial", 14, "bold")).pack(anchor="w", padx=10, pady=5)
+        self.result_text = ctk.CTkTextbox(result_frame, height=150)
+        self.result_text.pack(padx=10, pady=5, fill="both", expand=True)
     
-    def create_quick_create_tab(self):
-        """Create tab for quickly creating arrays"""
-        tab = ttk.Frame(self.notebook, padding="10")
-        self.notebook.add(tab, text="Quick Create")
+    def setup_file_operations_tab(self):
+        tab = self.tabview.tab("File Operations")
         
-        # Zeros array
-        zeros_frame = ttk.LabelFrame(tab, text="Create Zeros Array", padding="10")
-        zeros_frame.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=5)
+        # File path frame
+        file_frame = ctk.CTkFrame(tab)
+        file_frame.pack(padx=10, pady=10, fill="x")
         
-        ttk.Label(zeros_frame, text="Shape (rows, cols):").grid(row=0, column=0, pady=5)
-        self.zeros_shape = ttk.Entry(zeros_frame, width=20)
-        self.zeros_shape.grid(row=0, column=1, padx=5, pady=5)
-        self.zeros_shape.insert(0, "3, 3")
-        ttk.Button(zeros_frame, text="Create", 
-                   command=lambda: self.create_special_array('zeros')).grid(row=0, column=2, padx=5)
+        ctk.CTkLabel(file_frame, text="NPY File Operations:", font=("Arial", 14, "bold")).pack(anchor="w", padx=10, pady=5)
         
-        # Ones array
-        ones_frame = ttk.LabelFrame(tab, text="Create Ones Array", padding="10")
-        ones_frame.grid(row=1, column=0, sticky=(tk.W, tk.E), pady=5)
+        path_frame = ctk.CTkFrame(file_frame)
+        path_frame.pack(padx=10, pady=5, fill="x")
         
-        ttk.Label(ones_frame, text="Shape (rows, cols):").grid(row=0, column=0, pady=5)
-        self.ones_shape = ttk.Entry(ones_frame, width=20)
-        self.ones_shape.grid(row=0, column=1, padx=5, pady=5)
-        self.ones_shape.insert(0, "3, 3")
-        ttk.Button(ones_frame, text="Create", 
-                   command=lambda: self.create_special_array('ones')).grid(row=0, column=2, padx=5)
+        ctk.CTkLabel(path_frame, text="File Path:").pack(side="left", padx=5)
+        self.file_path_entry = ctk.CTkEntry(path_frame, width=400)
+        self.file_path_entry.pack(side="left", padx=5, fill="x", expand=True)
+        ctk.CTkButton(path_frame, text="Browse", command=self.browse_file).pack(side="left", padx=5)
         
-        # Identity array
-        identity_frame = ttk.LabelFrame(tab, text="Create Identity Matrix", padding="10")
-        identity_frame.grid(row=2, column=0, sticky=(tk.W, tk.E), pady=5)
+        # File operations buttons
+        btn_frame = ctk.CTkFrame(file_frame)
+        btn_frame.pack(padx=10, pady=10, fill="x")
         
-        ttk.Label(identity_frame, text="Size:").grid(row=0, column=0, pady=5)
-        self.identity_size = ttk.Entry(identity_frame, width=20)
-        self.identity_size.grid(row=0, column=1, padx=5, pady=5)
-        self.identity_size.insert(0, "3")
-        ttk.Button(identity_frame, text="Create", 
-                   command=lambda: self.create_special_array('identity')).grid(row=0, column=2, padx=5)
+        ctk.CTkButton(btn_frame, text="Load NPY File", command=self.load_npy_file).pack(side="left", padx=5)
+        ctk.CTkButton(btn_frame, text="Show File Info", command=self.show_file_info).pack(side="left", padx=5)
+        ctk.CTkButton(btn_frame, text="Copy File", command=self.copy_npy_file).pack(side="left", padx=5)
         
-        # Random array
-        random_frame = ttk.LabelFrame(tab, text="Create Random Array", padding="10")
-        random_frame.grid(row=3, column=0, sticky=(tk.W, tk.E), pady=5)
+        # File content display
+        content_frame = ctk.CTkFrame(tab)
+        content_frame.pack(padx=10, pady=10, fill="both", expand=True)
         
-        ttk.Label(random_frame, text="Shape (rows, cols):").grid(row=0, column=0, pady=5)
-        self.random_shape = ttk.Entry(random_frame, width=20)
-        self.random_shape.grid(row=0, column=1, padx=5, pady=5)
-        self.random_shape.insert(0, "3, 3")
-        ttk.Button(random_frame, text="Create", 
-                   command=lambda: self.create_special_array('random')).grid(row=0, column=2, padx=5)
-        
-        # Linspace array
-        linspace_frame = ttk.LabelFrame(tab, text="Create Linspace Array", padding="10")
-        linspace_frame.grid(row=4, column=0, sticky=(tk.W, tk.E), pady=5)
-        
-        ttk.Label(linspace_frame, text="Start:").grid(row=0, column=0, pady=5)
-        self.linspace_start = ttk.Entry(linspace_frame, width=10)
-        self.linspace_start.grid(row=0, column=1, padx=5, pady=5)
-        self.linspace_start.insert(0, "0")
-        
-        ttk.Label(linspace_frame, text="Stop:").grid(row=0, column=2, pady=5)
-        self.linspace_stop = ttk.Entry(linspace_frame, width=10)
-        self.linspace_stop.grid(row=0, column=3, padx=5, pady=5)
-        self.linspace_stop.insert(0, "10")
-        
-        ttk.Label(linspace_frame, text="Num:").grid(row=0, column=4, pady=5)
-        self.linspace_num = ttk.Entry(linspace_frame, width=10)
-        self.linspace_num.grid(row=0, column=5, padx=5, pady=5)
-        self.linspace_num.insert(0, "11")
-        
-        ttk.Button(linspace_frame, text="Create", 
-                   command=lambda: self.create_special_array('linspace')).grid(row=0, column=6, padx=5)
+        ctk.CTkLabel(content_frame, text="File Content:", font=("Arial", 14, "bold")).pack(anchor="w", padx=10, pady=5)
+        self.file_content_text = ctk.CTkTextbox(content_frame)
+        self.file_content_text.pack(padx=10, pady=5, fill="both", expand=True)
     
-    def log_output(self, message):
-        """Log message to output text area"""
-        self.output_text.insert(tk.END, message + "\n")
-        self.output_text.see(tk.END)
-        self.root.update_idletasks()
+    def setup_create_array_tab(self):
+        tab = self.tabview.tab("Create Array")
+        
+        # Create array frame
+        create_frame = ctk.CTkFrame(tab)
+        create_frame.pack(padx=10, pady=10, fill="both", expand=True)
+        
+        ctk.CTkLabel(create_frame, text="Create NumPy Array:", font=("Arial", 14, "bold")).pack(anchor="w", padx=10, pady=5)
+        
+        # Array input
+        ctk.CTkLabel(create_frame, text="Enter array data (e.g., [[1,2,3],[4,5,6]]):").pack(anchor="w", padx=10, pady=5)
+        self.create_array_text = ctk.CTkTextbox(create_frame, height=150)
+        self.create_array_text.pack(padx=10, pady=5, fill="x")
+        
+        # Buttons
+        btn_frame = ctk.CTkFrame(create_frame)
+        btn_frame.pack(padx=10, pady=10, fill="x")
+        
+        ctk.CTkButton(btn_frame, text="Create & Preview", command=self.create_array).pack(side="left", padx=5)
+        ctk.CTkButton(btn_frame, text="Save to Array 1", command=lambda: self.save_created_array(1)).pack(side="left", padx=5)
+        ctk.CTkButton(btn_frame, text="Save to Array 2", command=lambda: self.save_created_array(2)).pack(side="left", padx=5)
+        ctk.CTkButton(btn_frame, text="Save to NPY File", command=self.save_to_npy).pack(side="left", padx=5)
+        
+        # Preview
+        ctk.CTkLabel(create_frame, text="Preview:", font=("Arial", 12, "bold")).pack(anchor="w", padx=10, pady=5)
+        self.preview_text = ctk.CTkTextbox(create_frame, height=150)
+        self.preview_text.pack(padx=10, pady=5, fill="both", expand=True)
     
-    def clear_output(self):
-        """Clear output text area"""
-        self.output_text.delete(1.0, tk.END)
-    
-    def parse_array(self, array_str):
-        """Parse string to numpy array"""
+    # Array Operations Methods
+    def load_array1(self):
         try:
-            # Use eval with numpy available
-            array = eval(array_str, {"__builtins__": {}, "array": np.array}, {"np": np})
-            return np.array(array)
+            array_str = self.array1_text.get("1.0", "end-1c")
+            self.array1 = np.array(eval(array_str))
+            messagebox.showinfo("Success", "Array 1 loaded successfully!")
         except Exception as e:
-            raise ValueError(f"Invalid array format: {e}")
+            messagebox.showerror("Error", f"Failed to load array: {str(e)}")
     
-    def perform_operation(self, operation):
-        """Perform array operation"""
+    def load_array2(self):
         try:
-            array1_str = self.array1_entry.get()
-            array1 = self.parse_array(array1_str)
-            
-            self.log_output(f"\n{'='*60}")
-            self.log_output(f"Operation: {operation.upper()}")
-            self.log_output(f"{'='*60}")
-            
-            if operation == 'info':
-                self.log_output(f"Array 1:\n{array1}\n")
-                self.log_output("Basic Information:")
-                self.log_output(f"  Max value: {np.max(array1)}")
-                self.log_output(f"  Min value: {np.min(array1)}")
-                self.log_output(f"  Sum: {np.sum(array1)}")
-                self.log_output(f"  Data type: {array1.dtype}")
-                self.log_output(f"  Shape: {array1.shape}")
-                self.log_output(f"  Size: {array1.size}")
-                
-            elif operation == 'transpose':
-                result = self.array_manipulator.transpose_the_array(array1)
-                self.log_output(f"Original Array:\n{array1}\n")
-                self.log_output(f"Transposed Array:\n{result}")
-                
-            else:
-                array2_str = self.array2_entry.get()
-                array2 = self.parse_array(array2_str)
-                
-                self.log_output(f"Array 1:\n{array1}\n")
-                self.log_output(f"Array 2:\n{array2}\n")
-                
-                if operation == 'add':
-                    result = self.array_manipulator.add_two_arrays(array1, array2)
-                elif operation == 'subtract':
-                    result = self.array_manipulator.subtract_two_arrays(array1, array2)
-                elif operation == 'multiply':
-                    result = self.array_manipulator.multiply_two_arrays(array1, array2)
-                elif operation == 'divide':
-                    result = self.array_manipulator.divide_two_arrays(array1, array2)
-                
-                self.log_output(f"Result:\n{result}")
-            
-            self.log_output(f"{'='*60}\n")
-            messagebox.showinfo("Success", f"{operation.capitalize()} operation completed!")
-            
+            array_str = self.array2_text.get("1.0", "end-1c")
+            self.array2 = np.array(eval(array_str))
+            messagebox.showinfo("Success", "Array 2 loaded successfully!")
         except Exception as e:
-            self.log_output(f"ERROR: {str(e)}\n{traceback.format_exc()}")
-            messagebox.showerror("Error", f"Operation failed: {str(e)}")
+            messagebox.showerror("Error", f"Failed to load array: {str(e)}")
     
+    def show_array1_info(self):
+        if self.array1 is None:
+            messagebox.showwarning("Warning", "Please load Array 1 first!")
+            return
+        
+        info = f"Shape: {self.array1.shape}\n"
+        info += f"Size: {self.array1.size}\n"
+        info += f"Dtype: {self.array1.dtype}\n"
+        info += f"Max: {np.max(self.array1)}\n"
+        info += f"Min: {np.min(self.array1)}\n"
+        info += f"Sum: {np.sum(self.array1)}\n"
+        
+        self.result_text.delete("1.0", "end")
+        self.result_text.insert("1.0", "Array 1 Info:\n" + "="*40 + "\n" + info)
+    
+    def show_array2_info(self):
+        if self.array2 is None:
+            messagebox.showwarning("Warning", "Please load Array 2 first!")
+            return
+        
+        info = f"Shape: {self.array2.shape}\n"
+        info += f"Size: {self.array2.size}\n"
+        info += f"Dtype: {self.array2.dtype}\n"
+        info += f"Max: {np.max(self.array2)}\n"
+        info += f"Min: {np.min(self.array2)}\n"
+        info += f"Sum: {np.sum(self.array2)}\n"
+        
+        self.result_text.delete("1.0", "end")
+        self.result_text.insert("1.0", "Array 2 Info:\n" + "="*40 + "\n" + info)
+    
+    def add_arrays(self):
+        if self.array1 is None or self.array2 is None:
+            messagebox.showwarning("Warning", "Please load both arrays first!")
+            return
+        
+        try:
+            result = self.array_manipulator.add_two_arrays(self.array1, self.array2)
+            self.result_text.delete("1.0", "end")
+            self.result_text.insert("1.0", f"Addition Result:\n{result}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to add arrays: {str(e)}")
+    
+    def subtract_arrays(self):
+        if self.array1 is None or self.array2 is None:
+            messagebox.showwarning("Warning", "Please load both arrays first!")
+            return
+        
+        try:
+            result = self.array_manipulator.subtract_two_arrays(self.array1, self.array2)
+            self.result_text.delete("1.0", "end")
+            self.result_text.insert("1.0", f"Subtraction Result:\n{result}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to subtract arrays: {str(e)}")
+    
+    def multiply_arrays(self):
+        if self.array1 is None or self.array2 is None:
+            messagebox.showwarning("Warning", "Please load both arrays first!")
+            return
+        
+        try:
+            result = self.array_manipulator.multply_two_arrays(self.array1, self.array2)
+            self.result_text.delete("1.0", "end")
+            self.result_text.insert("1.0", f"Multiplication Result:\n{result}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to multiply arrays: {str(e)}")
+    
+    def divide_arrays(self):
+        if self.array1 is None or self.array2 is None:
+            messagebox.showwarning("Warning", "Please load both arrays first!")
+            return
+        
+        try:
+            result = self.array_manipulator.devide_two_arrays(self.array1, self.array2)
+            self.result_text.delete("1.0", "end")
+            self.result_text.insert("1.0", f"Division Result:\n{result}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to divide arrays: {str(e)}")
+    
+    def transpose_array1(self):
+        if self.array1 is None:
+            messagebox.showwarning("Warning", "Please load Array 1 first!")
+            return
+        
+        try:
+            result = self.array_manipulator.transpose_the_array(self.array1, speak_also=False)
+            self.result_text.delete("1.0", "end")
+            self.result_text.insert("1.0", f"Transpose Result:\n{result}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to transpose array: {str(e)}")
+    
+    # File Operations Methods
     def browse_file(self):
-        """Browse for .npy file"""
         filename = filedialog.askopenfilename(
-            title="Select .npy file",
-            filetypes=[("NumPy files", "*.npy"), ("All files", "*.*")]
+            title="Select NPY File",
+            filetypes=[("NumPy Files", "*.npy"), ("All Files", "*.*")]
         )
         if filename:
-            self.file_path_var.set(filename)
+            self.file_path_entry.delete(0, "end")
+            self.file_path_entry.insert(0, filename)
+            self.current_file_path = filename
     
     def load_npy_file(self):
-        """Load and display .npy file"""
+        file_path = self.file_path_entry.get()
+        if not file_path:
+            messagebox.showwarning("Warning", "Please enter or browse for a file path!")
+            return
+        
         try:
-            file_path = self.file_path_var.get()
-            if not file_path:
-                messagebox.showwarning("Warning", "Please select a file first!")
-                return
-            
-            self.log_output(f"\n{'='*60}")
-            self.log_output(f"Loading file: {file_path}")
-            self.log_output(f"{'='*60}")
-            
-            array = self.file_manipulator.load_npy_file(file_path)
-            self.log_output(f"File loaded successfully!\n")
-            self.log_output(f"Data:\n{array}")
-            self.log_output(f"{'='*60}\n")
-            
+            data = np.load(file_path, allow_pickle=True)
+            self.file_content_text.delete("1.0", "end")
+            self.file_content_text.insert("1.0", f"File: {file_path}\n\nContent:\n{data}")
             messagebox.showinfo("Success", "File loaded successfully!")
-            
         except Exception as e:
-            self.log_output(f"ERROR: {str(e)}\n{traceback.format_exc()}")
             messagebox.showerror("Error", f"Failed to load file: {str(e)}")
     
     def show_file_info(self):
-        """Show file information"""
+        file_path = self.file_path_entry.get()
+        if not file_path:
+            messagebox.showwarning("Warning", "Please enter or browse for a file path!")
+            return
+        
         try:
-            file_path = self.file_path_var.get()
-            if not file_path:
-                messagebox.showwarning("Warning", "Please select a file first!")
-                return
+            data = np.load(file_path, allow_pickle=True)
+            info = f"File: {file_path}\n\n"
+            info += f"Shape: {data.shape}\n"
+            info += f"Size: {data.size}\n"
+            info += f"Dtype: {data.dtype}\n"
+            info += f"Max: {np.max(data)}\n"
+            info += f"Min: {np.min(data)}\n"
+            info += f"Sum: {np.sum(data)}\n"
             
-            self.log_output(f"\n{'='*60}")
-            self.log_output(f"File Information: {file_path}")
-            self.log_output(f"{'='*60}")
-            
-            array = np.load(file_path)
-            self.log_output(f"Data:\n{array}\n")
-            self.log_output("Basic Information:")
-            self.log_output(f"  Max value: {np.max(array)}")
-            self.log_output(f"  Min value: {np.min(array)}")
-            self.log_output(f"  Sum: {np.sum(array)}")
-            self.log_output(f"  Data type: {array.dtype}")
-            self.log_output(f"  Shape: {array.shape}")
-            self.log_output(f"  Size: {array.size}")
-            self.log_output(f"{'='*60}\n")
-            
-            messagebox.showinfo("Success", "File info displayed!")
-            
+            self.file_content_text.delete("1.0", "end")
+            self.file_content_text.insert("1.0", info)
         except Exception as e:
-            self.log_output(f"ERROR: {str(e)}\n{traceback.format_exc()}")
-            messagebox.showerror("Error", f"Failed to show file info: {str(e)}")
-    
-    def browse_save_location(self):
-        """Browse for save location"""
-        filename = filedialog.asksaveasfilename(
-            title="Save as",
-            defaultextension=".npy",
-            filetypes=[("NumPy files", "*.npy"), ("All files", "*.*")]
-        )
-        if filename:
-            self.save_path_var.set(filename)
-    
-    def save_to_npy(self):
-        """Save array to .npy file"""
-        try:
-            array_str = self.save_array_entry.get()
-            array = self.parse_array(array_str)
-            
-            save_path = self.save_path_var.get()
-            if not save_path:
-                messagebox.showwarning("Warning", "Please specify save location!")
-                return
-            
-            self.log_output(f"\n{'='*60}")
-            self.log_output(f"Saving to: {save_path}")
-            self.log_output(f"{'='*60}")
-            
-            self.file_manipulator.move_to_npy(array, save_path)
-            
-            self.log_output(f"Array saved successfully!")
-            self.log_output(f"Data:\n{array}")
-            self.log_output(f"{'='*60}\n")
-            
-            messagebox.showinfo("Success", f"Array saved to {save_path}")
-            
-        except Exception as e:
-            self.log_output(f"ERROR: {str(e)}\n{traceback.format_exc()}")
-            messagebox.showerror("Error", f"Failed to save array: {str(e)}")
-    
-    def browse_file_for_copy(self, src_or_dest):
-        """Browse for file to copy"""
-        if src_or_dest == 'src':
-            filename = filedialog.askopenfilename(
-                title="Select source file",
-                filetypes=[("NumPy files", "*.npy"), ("All files", "*.*")]
-            )
-            if filename:
-                self.copy_src_var.set(filename)
-        else:
-            filename = filedialog.asksaveasfilename(
-                title="Select destination",
-                defaultextension=".npy",
-                filetypes=[("NumPy files", "*.npy"), ("All files", "*.*")]
-            )
-            if filename:
-                self.copy_dest_var.set(filename)
+            messagebox.showerror("Error", f"Failed to get file info: {str(e)}")
     
     def copy_npy_file(self):
-        """Copy .npy file"""
-        try:
-            src = self.copy_src_var.get()
-            dest = self.copy_dest_var.get()
-            
-            if not src or not dest:
-                messagebox.showwarning("Warning", "Please specify both source and destination!")
-                return
-            
-            self.log_output(f"\n{'='*60}")
-            self.log_output(f"Copying file")
-            self.log_output(f"From: {src}")
-            self.log_output(f"To: {dest}")
-            self.log_output(f"{'='*60}")
-            
-            array = self.file_manipulator.copy_npy_file(src, dest)
-            
-            self.log_output(f"File copied successfully!")
-            self.log_output(f"Data:\n{array}")
-            self.log_output(f"{'='*60}\n")
-            
-            messagebox.showinfo("Success", "File copied successfully!")
-            
-        except Exception as e:
-            self.log_output(f"ERROR: {str(e)}\n{traceback.format_exc()}")
-            messagebox.showerror("Error", f"Failed to copy file: {str(e)}")
+        src = self.file_path_entry.get()
+        if not src:
+            messagebox.showwarning("Warning", "Please enter or browse for a source file!")
+            return
+        
+        dest = filedialog.asksaveasfilename(
+            title="Save Copy As",
+            defaultextension=".npy",
+            filetypes=[("NumPy Files", "*.npy"), ("All Files", "*.*")]
+        )
+        
+        if dest:
+            try:
+                self.file_changer.copy_npy_file(src, dest)
+                messagebox.showinfo("Success", f"File copied to {dest}")
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to copy file: {str(e)}")
     
-    def create_special_array(self, array_type):
-        """Create special arrays"""
+    # Create Array Methods
+    def create_array(self):
         try:
-            self.log_output(f"\n{'='*60}")
-            self.log_output(f"Creating {array_type.upper()} array")
-            self.log_output(f"{'='*60}")
+            array_str = self.create_array_text.get("1.0", "end-1c")
+            self.created_array = np.array(eval(array_str))
             
-            if array_type == 'zeros':
-                shape_str = self.zeros_shape.get()
-                shape = tuple(map(int, shape_str.split(',')))
-                array = np.zeros(shape)
-                
-            elif array_type == 'ones':
-                shape_str = self.ones_shape.get()
-                shape = tuple(map(int, shape_str.split(',')))
-                array = np.ones(shape)
-                
-            elif array_type == 'identity':
-                size = int(self.identity_size.get())
-                array = np.eye(size)
-                
-            elif array_type == 'random':
-                shape_str = self.random_shape.get()
-                shape = tuple(map(int, shape_str.split(',')))
-                array = np.random.rand(*shape)
-                
-            elif array_type == 'linspace':
-                start = float(self.linspace_start.get())
-                stop = float(self.linspace_stop.get())
-                num = int(self.linspace_num.get())
-                array = np.linspace(start, stop, num)
+            preview = f"Array created successfully!\n\n"
+            preview += f"Content:\n{self.created_array}\n\n"
+            preview += f"Shape: {self.created_array.shape}\n"
+            preview += f"Size: {self.created_array.size}\n"
+            preview += f"Dtype: {self.created_array.dtype}\n"
             
-            self.log_output(f"Array created successfully!")
-            self.log_output(f"Shape: {array.shape}")
-            self.log_output(f"Data:\n{array}")
-            self.log_output(f"{'='*60}\n")
-            
-            # Update Array 1 field with the new array
-            self.array1_entry.delete(0, tk.END)
-            self.array1_entry.insert(0, str(array.tolist()))
-            
-            messagebox.showinfo("Success", f"{array_type.capitalize()} array created and loaded into Array 1!")
-            
+            self.preview_text.delete("1.0", "end")
+            self.preview_text.insert("1.0", preview)
         except Exception as e:
-            self.log_output(f"ERROR: {str(e)}\n{traceback.format_exc()}")
             messagebox.showerror("Error", f"Failed to create array: {str(e)}")
+    
+    def save_created_array(self, array_num):
+        if not hasattr(self, 'created_array'):
+            messagebox.showwarning("Warning", "Please create an array first!")
+            return
+        
+        if array_num == 1:
+            self.array1 = self.created_array
+            self.array1_text.delete("1.0", "end")
+            self.array1_text.insert("1.0", str(self.created_array.tolist()))
+            messagebox.showinfo("Success", "Array saved to Array 1!")
+        else:
+            self.array2 = self.created_array
+            self.array2_text.delete("1.0", "end")
+            self.array2_text.insert("1.0", str(self.created_array.tolist()))
+            messagebox.showinfo("Success", "Array saved to Array 2!")
+    
+    def save_to_npy(self):
+        if not hasattr(self, 'created_array'):
+            messagebox.showwarning("Warning", "Please create an array first!")
+            return
+        
+        file_path = filedialog.asksaveasfilename(
+            title="Save Array As",
+            defaultextension=".npy",
+            filetypes=[("NumPy Files", "*.npy"), ("All Files", "*.*")]
+        )
+        
+        if file_path:
+            try:
+                self.file_changer.move_to_npy(self.created_array, file_path)
+                messagebox.showinfo("Success", f"Array saved to {file_path}")
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to save array: {str(e)}")
 
 
 def main():
-    root = tk.Tk()
-    app = MatricesManipulatorGUI(root)
-    root.mainloop()
+    app = MatricesManipulatorApp()
+    app.mainloop()
 
 
 if __name__ == "__main__":
