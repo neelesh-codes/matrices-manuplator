@@ -12,7 +12,7 @@ ctk.set_default_color_theme("blue")
 
 class MatricesManipulatorApp(ctk.CTk):
     def __init__(self):
-        super().__init__()
+        super(MatricesManipulatorApp, self).__init__()
 
         # Configure window
         self.title("Matrices Manipulator")
@@ -26,6 +26,7 @@ class MatricesManipulatorApp(ctk.CTk):
         self.array1 = None
         self.array2 = None
         self.current_file_path = None
+        self.created_array = None
         
         # Create UI
         self.create_widgets()
@@ -165,7 +166,7 @@ class MatricesManipulatorApp(ctk.CTk):
             self.array1 = np.array(eval(array_str))
             messagebox.showinfo("Success", "Array 1 loaded successfully!")
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to load array: {str(e)}")
+            messagebox.showerror("Error", "Failed to load array: {}".format(str(e)))
     
     def load_array2(self):
         try:
@@ -173,19 +174,19 @@ class MatricesManipulatorApp(ctk.CTk):
             self.array2 = np.array(eval(array_str))
             messagebox.showinfo("Success", "Array 2 loaded successfully!")
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to load array: {str(e)}")
+            messagebox.showerror("Error", "Failed to load array: {}".format(str(e)))
     
     def show_array1_info(self):
         if self.array1 is None:
             messagebox.showwarning("Warning", "Please load Array 1 first!")
             return
         
-        info = f"Shape: {self.array1.shape}\n"
-        info += f"Size: {self.array1.size}\n"
-        info += f"Dtype: {self.array1.dtype}\n"
-        info += f"Max: {np.max(self.array1)}\n"
-        info += f"Min: {np.min(self.array1)}\n"
-        info += f"Sum: {np.sum(self.array1)}\n"
+        info = "Shape: {}\n".format(self.array1.shape)
+        info += "Size: {}\n".format(self.array1.size)
+        info += "Dtype: {}\n".format(self.array1.dtype)
+        info += "Max: {}\n".format(np.max(self.array1))
+        info += "Min: {}\n".format(np.min(self.array1))
+        info += "Sum: {}\n".format(np.sum(self.array1))
         
         self.result_text.delete("1.0", "end")
         self.result_text.insert("1.0", "Array 1 Info:\n" + "="*40 + "\n" + info)
@@ -195,12 +196,12 @@ class MatricesManipulatorApp(ctk.CTk):
             messagebox.showwarning("Warning", "Please load Array 2 first!")
             return
         
-        info = f"Shape: {self.array2.shape}\n"
-        info += f"Size: {self.array2.size}\n"
-        info += f"Dtype: {self.array2.dtype}\n"
-        info += f"Max: {np.max(self.array2)}\n"
-        info += f"Min: {np.min(self.array2)}\n"
-        info += f"Sum: {np.sum(self.array2)}\n"
+        info = "Shape: {}\n".format(self.array2.shape)
+        info += "Size: {}\n".format(self.array2.size)
+        info += "Dtype: {}\n".format(self.array2.dtype)
+        info += "Max: {}\n".format(np.max(self.array2))
+        info += "Min: {}\n".format(np.min(self.array2))
+        info += "Sum: {}\n".format(np.sum(self.array2))
         
         self.result_text.delete("1.0", "end")
         self.result_text.insert("1.0", "Array 2 Info:\n" + "="*40 + "\n" + info)
@@ -213,9 +214,9 @@ class MatricesManipulatorApp(ctk.CTk):
         try:
             result = self.array_manipulator.add_two_arrays(self.array1, self.array2)
             self.result_text.delete("1.0", "end")
-            self.result_text.insert("1.0", f"Addition Result:\n{result}")
+            self.result_text.insert("1.0", "Addition Result:\n{}".format(result))
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to add arrays: {str(e)}")
+            messagebox.showerror("Error", "Failed to add arrays: {}".format(str(e)))
     
     def subtract_arrays(self):
         if self.array1 is None or self.array2 is None:
@@ -225,9 +226,9 @@ class MatricesManipulatorApp(ctk.CTk):
         try:
             result = self.array_manipulator.subtract_two_arrays(self.array1, self.array2)
             self.result_text.delete("1.0", "end")
-            self.result_text.insert("1.0", f"Subtraction Result:\n{result}")
+            self.result_text.insert("1.0", "Subtraction Result:\n{}".format(result))
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to subtract arrays: {str(e)}")
+            messagebox.showerror("Error", "Failed to subtract arrays: {}".format(str(e)))
     
     def multiply_arrays(self):
         if self.array1 is None or self.array2 is None:
@@ -237,9 +238,9 @@ class MatricesManipulatorApp(ctk.CTk):
         try:
             result = self.array_manipulator.multply_two_arrays(self.array1, self.array2)
             self.result_text.delete("1.0", "end")
-            self.result_text.insert("1.0", f"Multiplication Result:\n{result}")
+            self.result_text.insert("1.0", "Multiplication Result:\n{}".format(result))
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to multiply arrays: {str(e)}")
+            messagebox.showerror("Error", "Failed to multiply arrays: {}".format(str(e)))
     
     def divide_arrays(self):
         if self.array1 is None or self.array2 is None:
@@ -249,9 +250,9 @@ class MatricesManipulatorApp(ctk.CTk):
         try:
             result = self.array_manipulator.devide_two_arrays(self.array1, self.array2)
             self.result_text.delete("1.0", "end")
-            self.result_text.insert("1.0", f"Division Result:\n{result}")
+            self.result_text.insert("1.0", "Division Result:\n{}".format(result))
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to divide arrays: {str(e)}")
+            messagebox.showerror("Error", "Failed to divide arrays: {}".format(str(e)))
     
     def transpose_array1(self):
         if self.array1 is None:
@@ -261,9 +262,9 @@ class MatricesManipulatorApp(ctk.CTk):
         try:
             result = self.array_manipulator.transpose_the_array(self.array1, speak_also=False)
             self.result_text.delete("1.0", "end")
-            self.result_text.insert("1.0", f"Transpose Result:\n{result}")
+            self.result_text.insert("1.0", "Transpose Result:\n{}".format(result))
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to transpose array: {str(e)}")
+            messagebox.showerror("Error", "Failed to transpose array: {}".format(str(e)))
     
     # File Operations Methods
     def browse_file(self):
@@ -285,10 +286,10 @@ class MatricesManipulatorApp(ctk.CTk):
         try:
             data = np.load(file_path, allow_pickle=True)
             self.file_content_text.delete("1.0", "end")
-            self.file_content_text.insert("1.0", f"File: {file_path}\n\nContent:\n{data}")
+            self.file_content_text.insert("1.0", "File: {}\n\nContent:\n{}".format(file_path, data))
             messagebox.showinfo("Success", "File loaded successfully!")
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to load file: {str(e)}")
+            messagebox.showerror("Error", "Failed to load file: {}".format(str(e)))
     
     def show_file_info(self):
         file_path = self.file_path_entry.get()
@@ -298,18 +299,18 @@ class MatricesManipulatorApp(ctk.CTk):
         
         try:
             data = np.load(file_path, allow_pickle=True)
-            info = f"File: {file_path}\n\n"
-            info += f"Shape: {data.shape}\n"
-            info += f"Size: {data.size}\n"
-            info += f"Dtype: {data.dtype}\n"
-            info += f"Max: {np.max(data)}\n"
-            info += f"Min: {np.min(data)}\n"
-            info += f"Sum: {np.sum(data)}\n"
+            info = "File: {}\n\n".format(file_path)
+            info += "Shape: {}\n".format(data.shape)
+            info += "Size: {}\n".format(data.size)
+            info += "Dtype: {}\n".format(data.dtype)
+            info += "Max: {}\n".format(np.max(data))
+            info += "Min: {}\n".format(np.min(data))
+            info += "Sum: {}\n".format(np.sum(data))
             
             self.file_content_text.delete("1.0", "end")
             self.file_content_text.insert("1.0", info)
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to get file info: {str(e)}")
+            messagebox.showerror("Error", "Failed to get file info: {}".format(str(e)))
     
     def copy_npy_file(self):
         src = self.file_path_entry.get()
@@ -326,9 +327,9 @@ class MatricesManipulatorApp(ctk.CTk):
         if dest:
             try:
                 self.file_changer.copy_npy_file(src, dest)
-                messagebox.showinfo("Success", f"File copied to {dest}")
+                messagebox.showinfo("Success", "File copied to {}".format(dest))
             except Exception as e:
-                messagebox.showerror("Error", f"Failed to copy file: {str(e)}")
+                messagebox.showerror("Error", "Failed to copy file: {}".format(str(e)))
     
     # Create Array Methods
     def create_array(self):
@@ -336,19 +337,19 @@ class MatricesManipulatorApp(ctk.CTk):
             array_str = self.create_array_text.get("1.0", "end-1c")
             self.created_array = np.array(eval(array_str))
             
-            preview = f"Array created successfully!\n\n"
-            preview += f"Content:\n{self.created_array}\n\n"
-            preview += f"Shape: {self.created_array.shape}\n"
-            preview += f"Size: {self.created_array.size}\n"
-            preview += f"Dtype: {self.created_array.dtype}\n"
+            preview = "Array created successfully!\n\n"
+            preview += "Content:\n{}\n\n".format(self.created_array)
+            preview += "Shape: {}\n".format(self.created_array.shape)
+            preview += "Size: {}\n".format(self.created_array.size)
+            preview += "Dtype: {}\n".format(self.created_array.dtype)
             
             self.preview_text.delete("1.0", "end")
             self.preview_text.insert("1.0", preview)
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to create array: {str(e)}")
+            messagebox.showerror("Error", "Failed to create array: {}".format(str(e)))
     
     def save_created_array(self, array_num):
-        if not hasattr(self, 'created_array'):
+        if self.created_array is None:
             messagebox.showwarning("Warning", "Please create an array first!")
             return
         
@@ -364,7 +365,7 @@ class MatricesManipulatorApp(ctk.CTk):
             messagebox.showinfo("Success", "Array saved to Array 2!")
     
     def save_to_npy(self):
-        if not hasattr(self, 'created_array'):
+        if self.created_array is None:
             messagebox.showwarning("Warning", "Please create an array first!")
             return
         
@@ -377,9 +378,9 @@ class MatricesManipulatorApp(ctk.CTk):
         if file_path:
             try:
                 self.file_changer.move_to_npy(self.created_array, file_path)
-                messagebox.showinfo("Success", f"Array saved to {file_path}")
+                messagebox.showinfo("Success", "Array saved to {}".format(file_path))
             except Exception as e:
-                messagebox.showerror("Error", f"Failed to save array: {str(e)}")
+                messagebox.showerror("Error", "Failed to save array: {}".format(str(e)))
 
 
 def main():
