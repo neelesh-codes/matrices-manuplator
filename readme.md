@@ -208,19 +208,13 @@ This project is open source and available under the MIT License.
 
 ## Changelog
 
-### Version 2.0
-- Added comprehensive GUI using Tkinter
-- Fixed typos in class and method names
-- Improved error handling
-- Added Quick Create tab for generating arrays
-- Enhanced file operations interface
-- Added detailed output logging
 
-### Version 1.0
+### Version 2.0
 - Initial release
 - Basic array operations
 - File handling capabilities
 - Text-to-speech integration
+- upgraded UI than version 1
 
 ## Roadmap
 
