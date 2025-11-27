@@ -35,11 +35,11 @@ class NPY_file_changer(util1.Numpy_array_manipulator):
         # print("Copied successfully!")
         # print("Here are the results: ")
         file = np.load(dest)
-        print(file)
+        # print(file)
         # print("+--------------------+------------------+")
         return file
 
-    def basic_info_of_file(self, npy_file_path, speak_also: bool = False):
+    def basic_info_of_file(self, npy_file_path):
         """This function loads a file and show a basic information of it like minimum value, maximum value, data type, size, shape etc.
         args:
             self: default argument for object.
@@ -63,12 +63,8 @@ class NPY_file_changer(util1.Numpy_array_manipulator):
         # for line in info:
         #     print(line)
 
-        if speak_also == True:
-            for line in info:
-                engine.say(line)
-                engine.runAndWait()
         
-        return npy_file
+        return info
 
     def move_to_npy(self, data: np.array, file_path: str):
         """This function converts a array or a group of arrays into a .npy file.
