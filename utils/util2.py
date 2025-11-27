@@ -1,5 +1,6 @@
 from . import util1
 import numpy as np
+import streamlit as st
 import os
 import shutil
 import sys
@@ -21,9 +22,8 @@ class NPY_file_changer(util1.Numpy_array_manipulator):
             self: default argument for object calling.
             npy_file_path: the path of the .npy file that to load."""
         npy_file = np.load(npy_file_path)
-        print(f"The data inside {npy_file_path}: \n{npy_file}")
-        print("|| Completed ||")
         return npy_file
+
 
     def copy_npy_file(self, src, dest):
         """This function will load a npy file and then copy it to another destination.
@@ -32,11 +32,11 @@ class NPY_file_changer(util1.Numpy_array_manipulator):
             src: source destination that to copy.
             dest: destination where to paste the source file."""
         shutil.copy(src, dest)
-        print("Copied successfully!")
-        print("Here are the results: ")
+        # print("Copied successfully!")
+        # print("Here are the results: ")
         file = np.load(dest)
         print(file)
-        print("+--------------------+------------------+")
+        # print("+--------------------+------------------+")
         return file
 
     def basic_info_of_file(self, npy_file_path, speak_also: bool = False):
@@ -44,12 +44,12 @@ class NPY_file_changer(util1.Numpy_array_manipulator):
         args:
             self: default argument for object.
             npy_file_path: The path of the file that to load."""
-        print(f"We are going to show the basic info of the file:\n{npy_file_path}")
+        # print(f"We are going to show the basic info of the file:\n{npy_file_path}")
         npy_file: np.array = np.load(npy_file_path, allow_pickle=True)
-        print("Loaded file successfully!")
-        print("Here is the basic info: ")
-        print("+--------------+------------------+")
-        print(npy_file)
+        # print("Loaded file successfully!")
+        # print("Here is the basic info: ")
+        # print("+--------------+------------------+")
+        # print(npy_file)
 
         info = []
         info.append(f"Max value: {np.max(npy_file)}")
@@ -59,9 +59,9 @@ class NPY_file_changer(util1.Numpy_array_manipulator):
         info.append(f"The shape of the array is: {npy_file.shape}")
         info.append(f"The size of the array is: {npy_file.size}")
 
-        print("Here is the basic info: ")
-        for line in info:
-            print(line)
+        # print("Here is the basic info: ")
+        # for line in info:
+        #     print(line)
 
         if speak_also == True:
             for line in info:
@@ -77,10 +77,10 @@ class NPY_file_changer(util1.Numpy_array_manipulator):
             data: The data to store in the npy file.
             file_path: name of the .npy file in which data to be stored."""
         np.save(file_path, data)
-        print(f"Saved the data to {file_path}.")
-        print("The data is: ")
+        # print(f"Saved the data to {file_path}.")
+        # print("The data is: ")
         file_data = np.load(file_path)
-        print(file_data)
+        # print(file_data)
         return file_data
 
 
@@ -94,13 +94,9 @@ if __name__ == "__main__":
         if not os.path.exists(test_file):
             test_data = np.array([[1, 2, 3], [4, 5, 6]])
             np.save(test_file, test_data)
-            print(f"Created test file: {test_file}")
+            # print(f"Created test file: {test_file}")
         
         instance.basic_info_of_file(test_file)
         
     except Exception as e:
-        print(f"The error is: {e}")
-    else:
-        print("Passed successfully.")
-    finally:
-        print('Exiting the program!')
+        st.write(e)
