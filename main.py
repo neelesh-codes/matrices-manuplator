@@ -18,6 +18,10 @@ if data:
         for row in rows
     ])
 
+if not data:
+    st.error("Aray is empty")
+
+if data:
     st.subheader("Info of matrices (array)")
     st.write(arr)
     st.write("Shape:", arr.shape)
