@@ -3,7 +3,6 @@ from utils.util2 import NPY_file_changer
 import numpy as np
 import pandas as pd
 import streamlit as st
-import pyttsx3
 
 # In pages/page1.py
 import sys
@@ -12,19 +11,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 menuplator = NPY_file_changer()
-
-
-# Initialize engine in session state
-if 'tts_engine' not in st.session_state:
-    st.session_state.tts_engine = pyttsx3.init()
-
-
-def speak_text(text):
-    engine = st.session_state.tts_engine
-    engine.say(text)
-    # Don't call runAndWait() here
-
-# Your file processing code
 
 
 # title of the file
@@ -59,7 +45,7 @@ if see_info:
 st.subheader("Copy a npy file to another")
 
 # Some instructions for user.
-st.text("Note: The source file will be the first file that you added in above input box!")
+st.text("Note: The source file will be the first file that you added in above input box!")  # noqa: E501
 
 # destination file path
 destination = st.text_input("Enter the destination path")

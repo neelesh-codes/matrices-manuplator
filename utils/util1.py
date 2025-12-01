@@ -1,13 +1,6 @@
 import numpy as np
 import datetime
-import os
-import shutil
-import pyttsx3
 import time
-
-engine = pyttsx3.init("sapi5")
-voices = engine.getProperty('voices')
-engine.setProperty('voices', voices[0].id)
 
 
 class Numpy_array_manipulator:
@@ -33,18 +26,12 @@ class Numpy_array_manipulator:
         info.append(f"The Data Type of the array: {npy_array.dtype}")
         info.append(f"The shape of the array is: {npy_array.shape}")
         info.append(f"The size of the array is: {npy_array.size}")
-        
+
         for line in info:
             print(line)
-        
+
         time.sleep(0.5)
-        if speak_also == True:
-            for line in info:
-                engine.say(line)
-                engine.runAndWait()
-            engine.say(f"Work completed at {datetime.datetime.now()}")
-            engine.runAndWait()
-        
+
         return npy_array
 
     def multiply_two_arrays(self, array_1, array_2, speak_also=False):
