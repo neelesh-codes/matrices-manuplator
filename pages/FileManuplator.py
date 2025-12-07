@@ -79,3 +79,7 @@ move = st.button("Move to .npy file")
 if move:
     menuplator.move_to_npy(data, new_file_path)
     st.success("Moved successfully!")
+
+st.markdown("---")
+
+st.header("Thank You! for comming till here!")

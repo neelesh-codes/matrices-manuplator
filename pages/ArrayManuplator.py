@@ -56,14 +56,62 @@ if not arr1 and arr2:
 
 if arr1:
     rows = arr1.strip().split("\n")
-    arr = np.array([
+    arr1 = np.array([
         [int(x) for x in row.replace(" ", "").split(",")]
         for row in rows
     ])
 
 if arr2:
     rows = arr2.strip().split("\n")
-    arr = np.array([
+    arr2 = np.array([
         [int(x) for x in row.replace(" ", "").split(",")]
         for row in rows
     ])
+
+if add:
+    st.write("After the array is added: ")
+    summed_arrays = array_model.add_two_arrays(arr1, arr2)
+    st.write(summed_arrays)
+
+if sub:
+    st.write("After the array is subtracted: ")
+    subtracted_array = array_model.subtract_two_arrays(arr1, arr2)
+    st.write(subtracted_array)
+
+if mul:
+    st.write("After the array is subtracted: ")
+    producted_array = array_model.multiply_two_arrays(arr1, arr2)
+    st.write(producted_array)
+
+if div:
+    st.write("After the array is subtracted: ")
+    quointed_array = array_model.divide_two_arrays(arr1, arr2)
+    st.write(quointed_array)
+
+st.markdown("---")
+
+st.header("Transpose your array here")
+
+array = st.text_area("Enter the array here: ")
+
+if not array:
+    st.error("Array is empty!")
+
+if array:
+    rows = array.strip().split("\n")
+    array = np.array([
+        [int(x) for x in row.replace(" ", "").split(",")]
+        for row in rows
+    ])
+
+trans = st.button("Transpose the array: ")
+
+if trans:
+    transposed_array = array_model.transpose_the_array(array)
+    st.write("After the array is transpoed: ")
+    st.write(transposed_array)
+
+st.markdown("---")
+
+st.header("Thank You! for comming till here!")
+

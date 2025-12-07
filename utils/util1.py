@@ -33,8 +33,8 @@ class Numpy_array_manipulator:
         args:
             Function takes two argument and one default argument "self" and two arguments "array_1" and "array_2" and return product of both of the arrays.
         """  # noqa: E501
-        result = array_1 @ array_2
-        print(f"Product of the function is: {result}")
+        result = array_1 * array_2
+        # print(f"Product of the function is: {result}")
 
         return result
 
@@ -47,7 +47,7 @@ class Numpy_array_manipulator:
             array_2: The second array or path to that array
         """  # noqa: E501
         result = np.add(array_1, array_2)
-        print(f"The sum is: {result}")
+        # print(f"The sum is: {result}")
 
         return result
 
@@ -60,7 +60,7 @@ class Numpy_array_manipulator:
             array_2: The second array or path to that array
         """  # noqa: E501
         result = array_1 - array_2
-        print(f"The difference is: {result}")
+        # print(f"The difference is: {result}")
 
         return result
 
@@ -73,7 +73,7 @@ class Numpy_array_manipulator:
             array_2: The second array or path to that array
         """  # noqa: E501
         result = array_1 / array_2
-        print(f"The quotient is: {result}")
+        # print(f"The quotient is: {result}")
 
         return result
 
@@ -86,9 +86,9 @@ class Numpy_array_manipulator:
             speak_also: for taking permission to use speakers.
         """  # noqa: E501
         arr = array_to_transpose
-        print(f"Array before transposing: {array_to_transpose}")
+        # print(f"Array before transposing: {array_to_transpose}")
         result = arr.T
-        print(f"After transposing: {result}")
+        # print(f"After transposing: {result}")
 
         return result
 
